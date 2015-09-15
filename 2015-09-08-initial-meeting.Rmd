@@ -1,0 +1,12 @@
+---
+title: "Meeting Micah"
+author: "Fred Boehm"
+date: "September 8, 2015"
+output: html_document
+---
+
+Terrorist organizations & social media
+
+Karl's office hours: 
+230 - 330 on Mondays or by appointment
+

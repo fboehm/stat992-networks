@@ -1,0 +1,11 @@
+---
+title: "Trying smappR package"
+author: "Fred Boehm"
+date: "September 15, 2015"
+output: html_document
+---
+
+
+```{r}
+devtools::install_github("SMAPPNYU/smappR")
+```
