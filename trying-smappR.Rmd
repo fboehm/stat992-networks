@@ -9,3 +9,22 @@ output: html_document
 ```{r}
 devtools::install_github("SMAPPNYU/smappR")
 ```
+
+```{r}
+library(smappR)
+```
+
+```{r}
+getTimeline(screen_name = "p_barbera",
+    filename = "pablo_tweets.json", # where tweets will be stored
+    n=500, ## number of tweets to download (max is 3,200)
+    oauth_folder = "~/Dropbox/credentials" )
+```
+
+```{r}
+fol <- getFollowers(screen_name = "p_barbera", oauth_folder="~/Dropbox/credentials")
+fri <- getFriends(screen_name = "p_barbera", oauth_folder="~/Dropbox/credentials")
+length(intersect(fol, fri))
+```
+
+
