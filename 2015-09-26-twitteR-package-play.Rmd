@@ -1,0 +1,33 @@
+---
+title: "twitteR package exploring"
+author: "Fred Boehm"
+date: "September 26, 2015"
+output: html_document
+---
+
+We want to explore the R package `twitteR`. Let's install from github.
+
+```{r eval=FALSE}
+devtools::install_github("geoffjentry/twitteR")
+devtools::install_github("SMAPPNYU/smappR")
+devtools::install_github("pablobarbera/streamR/streamR")
+```
+
+Load the package.
+
+
+```{r}
+library(twitteR)
+library(streamR)
+library(smappR)
+```
+
+We found at http://www.jihadica.com/the-%E2%80%98who%E2%80%99s-who%E2%80%99-of-the-most-important-jihadi-accounts-on-twitter/, accessed at 18:49 on 26 September 2015,
+
+a list of supposedly important terrorists with twitter accounts. We decided to examine the followers of one name from this list, WaleedGaj2002. 
+
+
+```{r}
+fols<- getFollowers(screen_name="WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=65)
+```
+

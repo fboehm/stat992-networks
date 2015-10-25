@@ -1,0 +1,176 @@
+---
+title: "Developing tools for network analysis"
+author: "Fred Boehm"
+date: "October 8, 2015"
+output: html_document
+bibliography: stat992.bib
+---
+
+## Abstract
+
+Networks, and the need for tools to analyze them, arise in sociology, applied statistics, molecular biology, computer science, and many other disciplines. We develop tools to study network structure, and we illustrate their use by characterizing a network of suspected terrorists on the social media platform Twitter. 
+
+## Why twitter?
+
+News reports indicate that members of various terrorist groups have used Twitter for communication. 
+
+
+
+## What do twitter data look like?
+
+For a given user of Twitter, we can get the list of followers and the list of users followed. We then can also get the collection of recent tweets sent by any given user. We parse a collection of tweets into 43 fields of data. There is a very high missingness rate for geographic information about the tweets.
+
+
+
+
+
+## Progress towards goal 1: Developing network analysis tools
+
+Terrorists are a "hard-to-reach" population. We want to adapt respondent-driven sampling methods to identify suspected terrorists on twitter. Our initial thought is that a retweet constitutes a coupon redemption, in the usual RDS terminology. Forrest Crawford, Karl Rohe and others have studied RDS. We will extend their work. 
+
+
+
+## Progress towards goal 2: Characterize terrorist network as it exists on twitter
+
+We found [here](http://www.jihadica.com/the-%E2%80%98who%E2%80%99s-who%E2%80%99-of-the-most-important-jihadi-accounts-on-twitter/), accessed at 18:49 on 26 September 2015, a list of supposedly important terrorists with twitter accounts. We decided to examine the followers of one name from this list, WaleedGaj2002. WaleedGaj2002 has more than 70,000 followers.
+
+
+
+```{r}
+devtools::install_github("rstudio/leaflet")
+devtools::install_github("rturn/parseTweetFiles")
+devtools::install_github("SMAPPNYU/smappR")
+devtools::install_github("pablobarbera/streamR/streamR")
+```
+
+
+```{r}
+library(smappR)
+library(streamR)
+library(knitr)
+opts_chunk$set(cache.extra = list(R.version, sessionInfo(), format(Sys.Date(), '%Y-%m')))
+```
+
+
+
+```{r wg-followers, cache=TRUE}
+fols<- getFollowers(screen_name="WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=65)
+length(fols)
+```
+
+
+
+
+
+## Challenges & Obstacles
+
+- tweets in many languages
+- REST API access is apparently not enabled for some twitter users, so we can't automate collection of their data.
+- finding 'seed' twitter users who are suspected of being terrorists
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Example code
+
+
+
+
+```{r multiple-tweeters, eval=FALSE}
+# downloading information about multiple users
+users.data <- getUsers(screen_names=c("p_barbera", "j_a_tucker", "smapp_nyu"),
+    oauth_folder = "~/Dropbox/credentials")
+
+# parsing locations into coordinates
+locations <- list()
+for (u in 1:length(users.data)){
+    locations[[u]] <- getGeo(users.data[[u]][['location']], verbose=TRUE)
+}
+```
+
+```{r abutalut7-analysis, eval=FALSE}
+getTimeline(screen_name="abutalut7", filename = "my_tweets.json", # where tweets will be stored
+    n=200, ## number of tweets to download (max is 3,200)
+    oauth_folder = "~/Dropbox/credentials" )
+foo <- parseTweets("my_tweets.json")
+foo <- foo[!is.na(foo$location),]
+```
+
+
+We get a 'not authorized' error when we try to use the REST api to get information - timeline, friends, followers - about abutalut7. I suspect that his account has some setting that blocks REST api access.
+
+### Another supposed terrorist: Khalid_Maqdisi
+
+
+```{r Khalid_Maqdisi-analysis, eval=TRUE}
+getTimeline(screen_name="Khalid_Maqdisi", filename = "my_tweets.json", # where tweets will be stored
+    oauth_folder = "~/Dropbox/credentials" )
+foo <- parseTweets("my_tweets.json")
+foo <- foo[!is.na(foo$location),]
+nrow(foo)
+```
+
+We see that none of Khalid's tweets have location, latitude, or longitude.
+
+Let's get the user id numbers of his followers, then get their tweets.
+
+```{r }
+fols<- getFollowers(screen_name="Khalid_Maqdisi", oauth_folder = "~/Dropbox/credentials")
+
+```
+
+Now, we assume that some of the followers will have accounts that are inaccessible via REST API. So, we'll use try() to circumvent the error message that we'll get if we're 'not authorized'.
+
+```{r khalid-followers, cache=TRUE, message=FALSE, error=FALSE, warning=FALSE}
+out<- list()
+for (i in 1:length(fols)){
+    try(out[[i]] <- getTimeline(id=fols[i], oauth_folder = "~/Dropbox/credentials", filename = paste0("tweet_files-", Sys.Date(),"/json_", fols[i])))
+}
+
+bar <- data.frame()
+for (i in dir(paste0("tweet_files-", Sys.Date()))){
+    print(i)
+    fn<- paste0("tweet_files-", Sys.Date(), "/", i)
+    foo <- data.frame()
+    try(foo <- parseTweets(fn))
+    bar <- rbind(foo, bar)
+}
+
+b2 <- bar[!is.na(bar$lat),]
+
+```
+
+
+
+
+
+## Using leaflet R package
+
+```{r, eval=TRUE}
+library(leaflet)
+if (nrow(b2)>0){
+    m <- leaflet() %>%
+    addTiles() %>%  # Add default OpenStreetMap map tiles
+    addMarkers(lng= b2$lon, lat=b2$lat, popup = b2$text)
+    m}
+```
+
+
+## References
+
+
+

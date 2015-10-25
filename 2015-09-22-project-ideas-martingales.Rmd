@@ -1,0 +1,19 @@
+---
+title: "Project Idea Thoughts: Martingales, Branching processes and Population Size Estimation"
+author: "Fred Boehm"
+date: "September 22, 2015"
+output: html_document
+bibliography: stat992.bib
+---
+
+## Karl R. mentioned, in stat 992 class today, that we might think about martingales and RDS. He didn't say more than that at this time. 
+
+A quick search on google scholar showed the article 
+
+It seems that there is some literature on branching processes and population size estimation. @klebaner1984geometric has a promising title. It also cites @fujimagari1976controlled and @klebaner1984population 
+
+
+## References
+
+
+

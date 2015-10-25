@@ -1,0 +1,44 @@
+---
+title: "Reading Athreya & Ney"
+author: "Fred Boehm"
+date: "September 26, 2015"
+output: html_document
+bibliography: stat992.bib
+---
+
+I'm beginning my study of @athreya2012branching.
+
+## Chapter 1: The Galton-Watson Process
+
+
+A Galton-Watson process is a Markov chain $\lbrace Z_n, n=0,1,2,...\rbrace$ on the non-negative integers.
+
+Define its transition function by a probability function $p_k: k = 0,1,2,...$ such that $\sum_k p_k = 1$ and $p_k \ge 0$ for all k. 
+
+$$P(Z_{n+1} = j | Z_n = i) = p_j^{*i}$$ for $i \ge 1$ and 
+
+$$P(Z_{n+1}=0|Z_n=0) = 1$$
+
+
+
+Note that zero is an absorbing state, 
+
+
+We need to think about *generating functions*. 
+
+$$f(s) = \sum_k p_ks^k$$
+
+Now, let $P_n(i,j)$ be the n-step transition probability and use the Chapman-Kolmogorov equations to get:
+
+$$f_n(s) - f_{(n)}(s)$$
+
+The authors say that this is an important result, but I don't yet understand why it is important.
+
+
+
+
+
+
+
+
+## References

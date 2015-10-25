@@ -1,0 +1,50 @@
+---
+title: "Graph Sampling"
+author: "Fred Boehm"
+date: "September 30, 2015"
+output: html_document
+bibliography: stat992.bib
+---
+
+## Readings on random graphs
+
+### From http://pfister.ee.duke.edu/courses/ecen655/sigma.pdf
+
+(Emphasis, bold and italics, is mine.)
+
+> **Definition 13: Vertex exposure martingale**: Let $(\Omega, \mathcal{F}, \mathbb{P})$ denote a probability space for the set of graphs with n vertices. Let G be a random graph and suppose that its vertices are labeled 1,2,...,n and *exposed sequentially in that order*. Let the random variable $Z_i$ define all edges emanating from node i. Then, for any function $f:\Omega \to \mathbb{R}$, the Doob martingale $X_i = \mathbb{E}[f(G)|Z_1, Z_2, ..., Z_i]$ is called the *vertex exposure martingale* and satisfies $X_0 = \mathbb{E}(f(G))$ and $X_n = f(G)$.
+
+There is a related notion called an *edge exposure martingale*.
+
+### Is our sampling process like a vertex exposure martingale?
+
+My first thought was that, in our setting, the fact that we don't know the population size is a problem when trying to answer this question. But, after reconsideration, it seems that it may not be a big problem; after all, our population has some finite size and, it seems, it fits into the vertex exposure martingale framework. For our case, $f(G)$ is the clustering coefficient (or another function of interest). 
+
+
+There may be complications and incompatibilities when trying to use the random graphs results.  
+
+
+
+## Notes from meeting (Sept 28, 2015) with Micah and Karl
+
+Consider the question of sampling a statistic, such as local clustering coefficient from a graph. We assume that we start with one seed. We can see the seed's row in the adjacency matrix, so we know everyone who is connected to the seed. 
+
+Let's introduce notation. Let $D_t$ denote our sample statistic when we know exactly $t$ rows of the adjacency matrix. Note that we allow the reordering of rows in the adjacency matrix. We sequentially sample, one at a time, individuals from the population and we 'see' their rows of the adjacency matrix. Starting with the seed, we see its 'friends' then choose one of those friends and examine that friend's row of the adjacency matrix.
+
+So, $D_2$ is the estimator of, say, the clustering coefficient, based on seeing the first two rows (the seed's row and the row belonging to a contact of the seed).
+
+We haven't yet specified how to sample from a given person's contacts when we have more than one to choose from. We suppose initially, that we sample uniformly at random from those that we haven't yet seen.
+
+Now, we need to think about $D_t$. We need a transition from $D_t$ to $D_{t+1}$. This transition depends on the current value of $D_t$. For this transition, we take a weighted average:
+
+$$D_{t+1} = D_t\frac{t}{t+1} + \delta_{t}\frac{1}{t+1}$$ where $\delta_t$ is an "innovation". We then have the telescoping sum, $$D_{t+1} = \frac{\sum_{i=0}^t \delta_t}{t+1}$$ Hence, by conditioning on $D_t$, we have that the $\delta_t$ is independent of the previous deltas. 
+
+
+
+
+
+
+
+## References
+
+
