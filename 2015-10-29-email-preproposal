@@ -1,0 +1,13 @@
+Preproposal
+
+Michah Dillard, Fred Boehm, Karl Rohe
+
+We will characterize the Twitter social network of terrorists. We will focus on the question "How much overlap is there between two known terrorist organizations?" where 'overlap' refers to shared social network membership. Twitter enables us to see the entire 'followers' list and 'friends' list for a given user, where 'friends' refers to the people whom  a user follows.
+
+Preliminary work has focused on three aspects of this question. First is the use of computational tools to explore social networks on twitter. We found a self-described terrorist, with twitter username @WaleedGaj2002, who has more than 70,000 followers. We acquired the 70,000+ usernames for his followers. We randomly sampled pairs of his followers and investigated the overlap between followers' followers using the Jaccard index.
+
+The second aspect is the study of distinct estimators of network properties. We have, for now, chosen the Jaccard index as our focus. We need to consider how best to sample the lists of friends and of followers to enable reasonable estimation of this quantity.
+
+Third is the identification of politically relevant members of twitter. Because terrorists are hard to reach, we are still searching for users with affiliations to distinct terror-supporting organizations. We are currently examining publicly available hierarchies of known terrorist organizations and trying to match terrorism-supporting twitter users with their respective affiliations.
+
+

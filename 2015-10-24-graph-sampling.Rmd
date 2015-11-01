@@ -1,0 +1,26 @@
+---
+title: "Graph sampling and Jaccard index estimation"
+output: html_document
+---
+
+We consider graph sampling and estimation of the [Jaccard index](https://en.wikipedia.org/wiki/Jaccard_index). In our studies of social networks, we need to quantify the extent to which two friends, A and B, of a given subject C are themselves, A and B, friends. We call a collection of three subjects, where all pairwise relationships are friendships, a "triangle". 
+
+
+
+## Sampling scheme
+
+Assume that for any sampled subject, we can see the 'friends list' for that subject; that is, we know all subjects who are friends of that sampled subject. While this seems like a strong assumption, such conditions are met, for example, in working with data from twitter, where each subject's list of friends is accessible. 
+
+We propose sampling uniformly at random an edge - call it (I,J) - from the edge list. *In which settings do we have access to the edge list?* 
+
+We then compute the Jaccard index for the friends lists of I and J. 
+
+$$J(\text{friends of I}, \text{friends of J}) = \frac{|\text{friends of I}\cap \text{friends of J}|}{|\text{friends of I}\cup \text{friends of J}|}$$
+
+
+## Questions
+
+1. We say that we can sample uniformly at random an edge from the edge list. Is this realistic? When is it realistic? When is it not realistic?
+
+
+

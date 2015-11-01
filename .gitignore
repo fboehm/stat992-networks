@@ -4,3 +4,4 @@
 *.pdf
 oauth-setup.R
 *.html
+*cache*
