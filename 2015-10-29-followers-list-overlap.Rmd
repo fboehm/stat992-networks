@@ -79,10 +79,17 @@ samp_jaccard_friends <- function(friends=frs){
 ```
 
 
-```{r loop}
+```{r replicate}
+set.seed(2015-11-01)
+
 #replicate(expr = samp_jaccard(fols), n=3)
-replicate(expr=samp_jaccard(friends), n=15)
+replicate(expr=samp_jaccard_friends(friends), n=10)
 
 
 ```
+
+
+
+
+
 
