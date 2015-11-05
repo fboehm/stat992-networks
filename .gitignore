@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .Rproj.user
 .Rhistory
 .RData
@@ -5,3 +6,18 @@
 oauth-setup.R
 *.html
 *cache*
+=======
+# History files
+.Rhistory
+.Rapp.history
+
+# Example code in package build process
+*-Ex.R
+
+# RStudio files
+.Rproj.user/
+
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+>>>>>>> 8a39fd6f760595c9c3a5d0bef90b3acead0a88ef
