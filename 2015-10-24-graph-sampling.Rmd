@@ -7,6 +7,7 @@ We consider graph sampling and estimation of the [Jaccard index](https://en.wiki
 
 
 
+
 ## Sampling scheme
 
 Assume that for any sampled subject, we can see the 'friends list' for that subject; that is, we know all subjects who are friends of that sampled subject. While this seems like a strong assumption, such conditions are met, for example, in working with data from twitter, where each subject's list of friends is accessible. 
