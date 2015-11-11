@@ -1,9 +1,11 @@
 ---
-title: "Terrorist-Sympathizer Networks on Twitter"
-output:
-  slidy_presentation:
-    incremental: yes
-date: "November 6, 2015"
+title: "Terrorist-sympathizer Networks on Twitter"
+output: 
+  beamer_presentation:
+    theme: hannover
+    toc: true
+date: "November 12, 2015"
+bibliography: twitter.bib
 ---
 
 
@@ -13,7 +15,10 @@ date: "November 6, 2015"
 
 ## Background & Motivation
 
-- Examples of news reports of terrorists using twitter during attacks??
+- Terrorists have used twitter to communicate about and during attacks
+    - Al-Shabab & Nairobi shopping mall in 2013
+
+![Alt text](why-terrorists.png)
 
 
 
@@ -32,11 +37,14 @@ date: "November 6, 2015"
     - Streaming API gives access to a small percentage of tweets as they are being sent
     - Static API gives access to user-specific information
 - Other researchers have written R packages to interface with Twitter's APIs    
-    - `streamR`, `twitteR` and `SMAPPR`
+    - `streamR`, `twitteR` and `smappR`
 
-## Twitter data
+![Alt text](logo_safetyspace.png)
 
-- We refer to those users that follow user A as "A's followers"
+
+## Twitter data & terminology
+
+- We refer to users that follow user A as "A's followers"
 - Users whom user A follows are "A's friends"
 - We can access the list of friends and list of followers for most users via the SMAPPR functions `getFriends` and `getFollowers`
 
@@ -54,14 +62,15 @@ date: "November 6, 2015"
 ## Initial hub identification
 
 - Via a google search, we found a list of terrorists on twitter
-- One such user, @WaleedGaj2002, has ~ 71,000 followers & 688 friends
+- One such user, \@WaleedGaj2002, has ~ 71,000 followers & 688 friends
     - former Guantanamo Bay prison detainee
     - Al Qaeda member
-    - insert photos here
 
-## Initial strategy to characterize the 'local' network around @WaleedGaj2002
+![Alt Text](waleedgaj2002.png)
 
-- Collect the list of friends of WaleedGaj2002
+## Initial strategy to characterize the 'local' network around \@WaleedGaj2002
+
+- Collect the list of friends of \@WaleedGaj2002
 - 
 - Randomly sample 2 friends, A and B
 - Collect the list of friends of A and B
@@ -73,12 +82,24 @@ date: "November 6, 2015"
 - To enter Monday morning
 
 
+## Limitations
+
+- Many tweets are in Arabic
+    - Google translate is not always reliable
+- Twitter actively disables accounts of terrorists
+    - criteria for disabling are not clear
+
+
+
 ## Next steps
 
 - Identify a hub from another terrorist organization 
     - ISIS
     - Boko Haram
+    - Al-Shabab
 
+
+## References
 
 
 
