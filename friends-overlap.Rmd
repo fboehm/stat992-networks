@@ -1,0 +1,94 @@
+---
+title: "Overlap in friends’ lists"
+output: html_document
+---
+
+We first install the latest versions of the needed R packages.
+
+```{r, eval=FALSE}
+devtools::install_github("rstudio/leaflet")
+devtools::install_github("SMAPPNYU/smappR")
+devtools::install_github("pablobarbera/streamR/streamR")
+```
+
+We load the packages and set knitr options.
+
+
+```{r}
+library(smappR)
+library(streamR)
+library(knitr)
+opts_chunk$set(cache.extra = list(R.version, sessionInfo(), format(Sys.Date(), '%Y-%m')))
+```
+
+Now, we get the list of followers of WaleedGaj2002.
+
+```{r wg-followers, cache=TRUE}
+# fols<- getFollowers(screen_name="WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=65)
+#length(fols)
+friends <- getFriends(screen_name = "WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=100)
+```
+
+Now that we've the list of followers of WaleedGaj2002, we can randomly choose two followers and calculate the Jaccard index for their friends lists.
+
+Recall that Jaccard index for nodes i and j is $$J(i,j) = \frac{|A \cap B|}{|A \cup B|}$$ where node i has friends list A and B denotes the friends list of node j.
+
+
+
+
+
+
+```{r}
+
+calc_jaccard_followers <- function(id1, id2, sleep = 10){
+    fol1 <- NA
+    fol2 <- NA
+    try(fol1 <- getFollowers(user_id=id1, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
+    try(fol2 <- getFollowers(user_id=id2, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
+    denom <- length(union(fol1, fol2))
+    num <- length(intersect(fol1, fol2))
+    ratio <- num/denom
+    return(list(ratio=ratio, num=num, denom=denom, n1 = length(fol1), n2=length(fol2)))
+}
+
+
+samp_jaccard_followers <- function(followers=fols){
+    samp <- sample(followers, size = 2, replace=FALSE)
+    ji<- calc_jaccard_followers(id1=samp[1], id2 = samp[2], sleep=100)
+    return(c(unlist(ji), samp[1], samp[2]))
+}
+calc_jaccard_friends <- function(id1, id2, sleep = 10){
+    fol1 <- NA
+    fol2 <- NA
+    try(fol1 <- getFriends(user_id=id1, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
+    try(fol2 <- getFriends(user_id=id2, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
+    denom <- length(union(fol1, fol2))
+    num <- length(intersect(fol1, fol2))
+    ratio <- num/denom
+    return(list(ratio=ratio, num=num, denom=denom, n1 = length(fol1), n2=length(fol2)))
+}
+
+
+samp_jaccard_friends <- function(friends=frs){
+    samp <- sample(friends, size = 2, replace=FALSE)
+    ji<- calc_jaccard_friends(id1=samp[1], id2 = samp[2], sleep=70)
+    return(c(unlist(ji), samp[1], samp[2]))
+}
+
+```
+
+
+```{r replicate}
+set.seed(2015-11-05)
+
+#replicate(expr = samp_jaccard(fols), n=3)
+out<- replicate(expr=samp_jaccard_friends(friends), n=1500)
+save.image("tmp_RData/out-5-nov.RData")
+
+```
+
+
+
+
+
+
