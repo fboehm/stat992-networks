@@ -1,9 +1,6 @@
 ---
 title: "Terrorist-sympathizer Networks on Twitter"
-output: 
-  beamer_presentation:
-    theme: hannover
-    toc: true
+output: beamer_presentation
 date: "November 12, 2015"
 bibliography: twitter.bib
 ---
@@ -39,8 +36,6 @@ bibliography: twitter.bib
 - Other researchers have written R packages to interface with Twitter's APIs    
     - `streamR`, `twitteR` and `smappR`
 
-![Alt text](logo_safetyspace.png)
-
 
 ## Twitter data & terminology
 
@@ -51,13 +46,15 @@ bibliography: twitter.bib
 ## Twitter data vs. Traditional RDS
 
 - Twitter permits us to see the entirety of a given user's friends & followers
-- In RDS, we typically learn how many acquaintances a given person has and we get to see the identities of a limited number of them
+- In RDS, we typically learn how many acquaintances a given person has and we get to see the identities of a limited number of them (those who redeem coupons)
 - How can we leverage the added information (entire lists of friends & followers) that twitter gives us?
 
 ## Jaccard index
 
-- Science indicates that a measure of overlap between sympathizers of distinct terrorist networks may be useful
+- Scientific context indicates that a measure of overlap between sympathizers of distinct terrorist networks may be useful
 - Jaccard index is defined, for a pair of sets, A and B, as the ratio of the cardinality of the intersection to the cardinality of the union
+
+
 
 ## Initial hub identification
 
@@ -68,10 +65,10 @@ bibliography: twitter.bib
 
 ![Alt Text](waleedgaj2002.png)
 
+
 ## Initial strategy to characterize the 'local' network around \@WaleedGaj2002
 
 - Collect the list of friends of \@WaleedGaj2002
-- 
 - Randomly sample 2 friends, A and B
 - Collect the list of friends of A and B
 - Calculate the Jaccard index for (friends of A) and (friends of B)
@@ -88,7 +85,7 @@ bibliography: twitter.bib
     - Google translate is not always reliable
 - Twitter actively disables accounts of terrorists
     - criteria for disabling are not clear
-
+- REST API can be accessed, on average, once per minute
 
 
 ## Next steps
@@ -98,8 +95,6 @@ bibliography: twitter.bib
     - Boko Haram
     - Al-Shabab
 
-
-## References
 
 
 
