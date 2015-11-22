@@ -1,45 +1,21 @@
----
-title: "Overlap in friends’ lists"
-output: html_document
----
+## ---- eval=FALSE---------------------------------------------------------
+## devtools::install_github("rstudio/leaflet")
+## devtools::install_github("SMAPPNYU/smappR")
+## devtools::install_github("pablobarbera/streamR/streamR")
 
-We first install the latest versions of the needed R packages.
-
-```{r, eval=FALSE}
-devtools::install_github("rstudio/leaflet")
-devtools::install_github("SMAPPNYU/smappR")
-devtools::install_github("pablobarbera/streamR/streamR")
-```
-
-We load the packages and set knitr options.
-
-
-```{r}
+## ------------------------------------------------------------------------
 library(smappR)
 library(streamR)
 library(knitr)
 opts_chunk$set(cache.extra = list(R.version, sessionInfo(), format(Sys.Date(), '%Y-%m')))
-```
 
-Now, we get the list of followers of WaleedGaj2002.
-
-```{r wg-followers, cache=TRUE}
+## ----wg-followers, cache=TRUE--------------------------------------------
 # fols<- getFollowers(screen_name="WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=65)
 #length(fols)
 fr1 <- getFriends(screen_name = "WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=60)
 fr2 <- getFriends(screen_name = "saeed_950", oauth_folder = "~/Dropbox/credentials", sleep=60)
-```
 
-Now that we've the list of followers of WaleedGaj2002, we can randomly choose two followers and calculate the Jaccard index for their friends lists.
-
-Recall that Jaccard index for nodes i and j is $$J(i,j) = \frac{|A \cap B|}{|A \cup B|}$$ where node i has friends list A and B denotes the friends list of node j.
-
-
-
-
-
-
-```{r}
+## ------------------------------------------------------------------------
 
 calc_jaccard_followers <- function(id1, id2, sleep = 10){
     fol1 <- NA
@@ -76,9 +52,8 @@ samp_jaccard_friends <- function(friends=frs){
     return(c(unlist(ji), samp[1], samp[2]))
 }
 
-```
 
-```{r}
+## ------------------------------------------------------------------------
 calc_jaccard<- function(a,b){
     denom <- length(union(a, b))
     num <- length(intersect(a, b))
@@ -96,19 +71,14 @@ wrap <- function(id1, id2, sleep = 30){
 }
 
 
-```
 
-```{r replicate}
+## ----replicate-----------------------------------------------------------
 set.seed(2015-11-22)
 replicate(expr = wrap(id1 = sample(fr1, size=1), id2 = sample(fr2, size=1)), n = 100)
 
 save.image("tmp_RData/out-22-nov.RData")
 
-```
 
-
-
-```{r}
+## ------------------------------------------------------------------------
 devtools::session_info()
-```
 
