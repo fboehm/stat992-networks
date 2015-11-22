@@ -36,6 +36,7 @@ bibliography: twitter.bib
 - Other researchers have written R packages to interface with Twitter's APIs    
     - `streamR`, `twitteR` and `smappR`
 
+![Alt text](logo_safteyspace.png)
 
 ## Twitter data & terminology
 
@@ -49,12 +50,16 @@ bibliography: twitter.bib
 - In RDS, we typically learn how many acquaintances a given person has and we get to see the identities of a limited number of them (those who redeem coupons)
 - How can we leverage the added information (entire lists of friends & followers) that twitter gives us?
 
+![](recruit-crop.pdf)
+
+
+
 ## Jaccard index
 
 - Scientific context indicates that a measure of overlap between sympathizers of distinct terrorist networks may be useful
 - Jaccard index is defined, for a pair of sets, A and B, as the ratio of the cardinality of the intersection to the cardinality of the union
 
-
+![](venn.png)
 
 ## Initial hub identification
 
@@ -74,9 +79,27 @@ bibliography: twitter.bib
 - Calculate the Jaccard index for (friends of A) and (friends of B)
 - Repeat for another random sample of two friends
 
-## Initial results
+## Initial results on Overlap of friends of friends of \@WaleedGaj2002
 
-- To enter Monday morning
+- Two of 688 friends - call them A and B - of \@WaleedGaj2002 chosen randomly
+- Jaccard index for friends of A and friends of B calculated
+- Repeat 1500 times
+
+
+```{r, echo=FALSE}
+load("~/Box Sync/Documents/wisconsin-stat-grad-school/fall2015/stat992-F2015/tmp_RData/out-5-nov.RData")
+dat<- data.frame(t(out))
+names(dat)[6:7]<- c("id1", "id2")
+jacc <- as.numeric(as.character(dat$ratio))
+```
+
+Number with nonzero Jaccard index: `r sum(jacc >0, na.rm=TRUE)`    
+Number with Jaccard index greater than 0.1: `r sum(jacc >0.1, na.rm=TRUE)`
+
+
+```{r, fig.height = 3}
+hist(jacc[jacc >0])
+```
 
 
 ## Limitations
@@ -85,7 +108,7 @@ bibliography: twitter.bib
     - Google translate is not always reliable
 - Twitter actively disables accounts of terrorists
     - criteria for disabling are not clear
-- REST API can be accessed, on average, once per minute
+- API can be accessed, on average, once per minute
 
 
 ## Next steps
