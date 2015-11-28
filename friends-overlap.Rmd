@@ -18,7 +18,7 @@ We load the packages and set knitr options.
 library(smappR)
 library(streamR)
 library(knitr)
-opts_chunk$set(cache.extra = list(R.version, sessionInfo(), format(Sys.Date(), '%Y-%m')))
+opts_chunk$set(cache=TRUE, cache.extra = list(R.version, sessionInfo(), format(Sys.Date(), '%Y-%m')))
 ```
 
 Now, we get the list of followers of WaleedGaj2002.
@@ -78,7 +78,7 @@ samp_jaccard_friends <- function(friends=frs){
 
 ```
 
-```{r}
+```{r, cache=TRUE}
 calc_jaccard<- function(a,b){
     denom <- length(union(a, b))
     num <- length(intersect(a, b))
@@ -98,7 +98,7 @@ wrap <- function(id1, id2, sleep = 30){
 
 ```
 
-```{r replicate}
+```{r replicate, cache=TRUE}
 set.seed(2015-11-22)
 replicate(expr = wrap(id1 = sample(fr1, size=1), id2 = sample(fr2, size=1)), n = 100)
 
@@ -106,7 +106,14 @@ save.image("tmp_RData/out-22-nov.RData")
 
 ```
 
+## Counting overlap in friends of \@WaleedGaj2002 and friends of \@saeed_950
 
+```{r, cache=TRUE}
+intersect(fr1, fr2)
+union(fr1, fr2)
+```
+
+### Session info
 
 ```{r}
 devtools::session_info()
