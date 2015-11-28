@@ -13,7 +13,7 @@ opts_chunk$set(cache.extra = list(R.version, sessionInfo(), format(Sys.Date(), '
 # fols<- getFollowers(screen_name="WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=65)
 #length(fols)
 fr1 <- getFriends(screen_name = "WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=60)
-fr2 <- getFriends(screen_name = "saeed_950", oauth_folder = "~/Dropbox/credentials", sleep=60)
+fr2 <- getFriends(screen_name = "qqqqq12345564", oauth_folder = "~/Dropbox/credentials", sleep=60)
 
 ## ------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ calc_jaccard<- function(a,b){
     return(ratio)
 }
 
-wrap <- function(id1, id2, sleep = 30){
+wrap <- function(id1, id2, sleep = 70){
     f1 <- NA
     f2 <- NA
     try(f1 <- getFriends(user_id=id1, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))

@@ -1,0 +1,32 @@
+---
+title: "Jaccard index estimation"
+date: "11/23/2015"
+output: slidy_presentation
+---
+
+## @saeed950
+
+- suspected ISIS supporter  
+- account listed by @reportterrorist
+- I can't find his account when I do a web search of google
+- 1041 friends
+
+
+## @WaleedGaj2002
+
+- 684 friends (683 this morning)
+
+## @saeed950 & @WaleedGaj2002 & Jaccard index
+
+- id: 4252627333  
+    - @ab__ub is a friend of @WaleedGaj2002  
+    - 1797 followers  
+    - 171 friends  
+  
+- id: 4163764763  
+    - @SADACZXCZXCZXCZ is a friend of @saeed950  
+    - 1784 followers  
+    - 369 friends  
+
+- Jaccard index: Overlap in friends of @SADACZXCZXCZXCZ and @ab__ub
+    - 131/404 = 0.32

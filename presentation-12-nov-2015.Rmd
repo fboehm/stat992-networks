@@ -87,7 +87,7 @@ bibliography: twitter.bib
 
 
 ```{r, echo=FALSE}
-load("~/Box Sync/Documents/wisconsin-stat-grad-school/fall2015/stat992-F2015/tmp_RData/out-5-nov.RData")
+load("tmp_RData/out-5-nov.RData")
 dat<- data.frame(t(out))
 names(dat)[6:7]<- c("id1", "id2")
 jacc <- as.numeric(as.character(dat$ratio))

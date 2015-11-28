@@ -83,7 +83,7 @@ calc_jaccard<- function(a,b){
     denom <- length(union(a, b))
     num <- length(intersect(a, b))
     ratio <- num/denom
-    return(ratio)
+    return(c(ratio, num, denom))
 }
 
 wrap <- function(id1, id2, sleep = 30){
