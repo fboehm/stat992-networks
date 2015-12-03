@@ -1,0 +1,1667 @@
+
+R version 3.2.2 (2015-08-14) -- "Fire Safety"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-redhat-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> ## ---- eval=FALSE---------------------------------------------------------
+> ## devtools::install_github("rstudio/leaflet")
+> ## devtools::install_github("SMAPPNYU/smappR")
+> ## devtools::install_github("pablobarbera/streamR/streamR")
+> 
+> ## ------------------------------------------------------------------------
+> library(smappR)
+Loading required package: rmongodb
+Loading required package: R2WinBUGS
+Loading required package: coda
+Loading required package: boot
+Loading required package: tm
+Loading required package: NLP
+Loading required package: ROAuth
+Loading required package: rjson
+Loading required package: RJSONIO
+
+Attaching package: ‘RJSONIO’
+
+The following objects are masked from ‘package:rjson’:
+
+    fromJSON, toJSON
+
+##
+## smappR: tools for analysis of Twitter data
+## Social Media and Political Participation Lab at NYU
+## smapp.nyu.edu @SMAPP_NYU
+##
+## Support provided by the U.S. National Science Foundation
+## (INSPIRE program award #1248077)
+##
+> library(streamR)
+Loading required package: RCurl
+Loading required package: bitops
+> library(knitr)
+> opts_chunk$set(cache.extra = list(R.version, sessionInfo(), format(Sys.Date(), '%Y-%m')))
+> 
+> ## ----wg-followers, cache=TRUE--------------------------------------------
+> # fols<- getFollowers(screen_name="WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=65)
+> #length(fols)
+> fr1 <- getFriends(screen_name = "WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=60)
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+684 friends. Next cursor: 0
+14 API calls left
+> fr2 <- getFriends(screen_name = "qqqqq12345564", oauth_folder = "~/Dropbox/credentials", sleep=60)
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+1041 friends. Next cursor: 0
+13 API calls left
+> 
+> ## ------------------------------------------------------------------------
+> 
+> calc_jaccard_followers <- function(id1, id2, sleep = 10){
++     fol1 <- NA
++     fol2 <- NA
++     try(fol1 <- getFollowers(user_id=id1, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
++     try(fol2 <- getFollowers(user_id=id2, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
++     denom <- length(union(fol1, fol2))
++     num <- length(intersect(fol1, fol2))
++     ratio <- num/denom
++     return(list(ratio=ratio, num=num, denom=denom, n1 = length(fol1), n2=length(fol2)))
++ }
+> 
+> 
+> samp_jaccard_followers <- function(followers=fols){
++     samp <- sample(followers, size = 2, replace=FALSE)
++     ji<- calc_jaccard_followers(id1=samp[1], id2 = samp[2], sleep=100)
++     return(c(unlist(ji), samp[1], samp[2]))
++ }
+> calc_jaccard_friends <- function(id1, id2, sleep = 10){
++     fol1 <- NA
++     fol2 <- NA
++     try(fol1 <- getFriends(user_id=id1, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
++     try(fol2 <- getFriends(user_id=id2, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
++     denom <- length(union(fol1, fol2))
++     num <- length(intersect(fol1, fol2))
++     ratio <- num/denom
++     return(list(ratio=ratio, num=num, denom=denom, n1 = length(fol1), n2=length(fol2)))
++ }
+> 
+> 
+> samp_jaccard_friends <- function(friends=frs){
++     samp <- sample(friends, size = 2, replace=FALSE)
++     ji<- calc_jaccard_friends(id1=samp[1], id2 = samp[2], sleep=70)
++     return(c(unlist(ji), samp[1], samp[2]))
++ }
+> 
+> 
+> ## ------------------------------------------------------------------------
+> calc_jaccard<- function(a,b){
++     denom <- length(union(a, b))
++     num <- length(intersect(a, b))
++     ratio <- num/denom
++     return(ratio)
++ }
+> 
+> wrap <- function(id1, id2, sleep = 70){
++     f1 <- NA
++     f2 <- NA
++     try(f1 <- getFriends(user_id=id1, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
++     try(f2 <- getFriends(user_id=id2, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
++     ji <- calc_jaccard(f1, f2)
++     return(c(ji, id1, id2))
++ }
+> 
+> 
+> 
+> ## ----replicate-----------------------------------------------------------
+> set.seed(2015-11-22)
+> replicate(expr = wrap(id1 = sample(fr1, size=1), id2 = sample(fr2, size=1)), n = 100)
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+7 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+135 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+68 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+244 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+67 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+4120 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+327 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+273 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+11 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+Error : Authorization Required
+
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+275 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+2 API calls left
+5000 friends. Next cursor: 1518016744597891114
+1 API calls left
+10000 friends. Next cursor: 1517656588074148135
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+15000 friends. Next cursor: 1517302089198735427
+14 API calls left
+20000 friends. Next cursor: 1516795320506601339
+13 API calls left
+25000 friends. Next cursor: 1516249438602026255
+12 API calls left
+26753 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+247 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+113 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+2403 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+197 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+5000 friends. Next cursor: 1518518298265985288
+6 API calls left
+10000 friends. Next cursor: 1518498536650188065
+5 API calls left
+15000 friends. Next cursor: 1518469154554473786
+4 API calls left
+20000 friends. Next cursor: 1518444731184011419
+3 API calls left
+25000 friends. Next cursor: 1518394546883320944
+2 API calls left
+30000 friends. Next cursor: 1518374154123560863
+1 API calls left
+35000 friends. Next cursor: 1518313229477674296
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+40000 friends. Next cursor: 1518291222752879118
+12 API calls left
+45000 friends. Next cursor: 1518262275053607866
+11 API calls left
+50000 friends. Next cursor: 1518225183421998010
+10 API calls left
+55000 friends. Next cursor: 1518207353823807889
+9 API calls left
+60000 friends. Next cursor: 1518155935629936334
+8 API calls left
+65000 friends. Next cursor: 1518135148106546619
+7 API calls left
+70000 friends. Next cursor: 1518118674298231298
+6 API calls left
+75000 friends. Next cursor: 1518099335901889342
+5 API calls left
+80000 friends. Next cursor: 1518046253003043758
+4 API calls left
+85000 friends. Next cursor: 1518030832859741469
+3 API calls left
+90000 friends. Next cursor: 1517969766686394702
+2 API calls left
+95000 friends. Next cursor: 1517951161110601849
+1 API calls left
+100000 friends. Next cursor: 1517884823651609486
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+105000 friends. Next cursor: 1517863145722893363
+11 API calls left
+110000 friends. Next cursor: 1517806838832002408
+10 API calls left
+115000 friends. Next cursor: 1517776728945138209
+9 API calls left
+120000 friends. Next cursor: 1517762305312065903
+8 API calls left
+125000 friends. Next cursor: 1517731941756644426
+7 API calls left
+130000 friends. Next cursor: 1517679471479254484
+6 API calls left
+135000 friends. Next cursor: 1517659147797768423
+5 API calls left
+140000 friends. Next cursor: 1517611439240875161
+4 API calls left
+145000 friends. Next cursor: 1517571457711506228
+3 API calls left
+150000 friends. Next cursor: 1517524710652558425
+2 API calls left
+155000 friends. Next cursor: 1517505704774515673
+1 API calls left
+160000 friends. Next cursor: 1517477322411062009
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+165000 friends. Next cursor: 1517186045986786695
+11 API calls left
+170000 friends. Next cursor: 1516942195859125509
+10 API calls left
+175000 friends. Next cursor: 1516785390976784225
+9 API calls left
+180000 friends. Next cursor: 1516680706731895048
+8 API calls left
+185000 friends. Next cursor: 1516404901479962772
+7 API calls left
+190000 friends. Next cursor: 1516137156062247565
+6 API calls left
+195000 friends. Next cursor: 1515767796726654125
+5 API calls left
+200000 friends. Next cursor: 1515579950250891018
+4 API calls left
+205000 friends. Next cursor: 1515307440342336475
+3 API calls left
+210000 friends. Next cursor: 1514922149001448702
+2 API calls left
+215000 friends. Next cursor: 1514540841328053762
+1 API calls left
+220000 friends. Next cursor: 1514233879400235362
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+225000 friends. Next cursor: 1513873793900756798
+11 API calls left
+230000 friends. Next cursor: 1513706415693306272
+10 API calls left
+235000 friends. Next cursor: 1513460877938414502
+9 API calls left
+240000 friends. Next cursor: 1513277176125179264
+8 API calls left
+245000 friends. Next cursor: 1512934228812216197
+7 API calls left
+250000 friends. Next cursor: 1512567114265228524
+6 API calls left
+255000 friends. Next cursor: 1512400443807275552
+5 API calls left
+260000 friends. Next cursor: 1512298285053001490
+4 API calls left
+265000 friends. Next cursor: 1512179492247459666
+3 API calls left
+270000 friends. Next cursor: 1511836191132249271
+2 API calls left
+275000 friends. Next cursor: 1511507216155144872
+1 API calls left
+280000 friends. Next cursor: 1511191482326637133
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+285000 friends. Next cursor: 1510921930910912659
+11 API calls left
+290000 friends. Next cursor: 1510486593102426891
+10 API calls left
+295000 friends. Next cursor: 1510343094048930490
+9 API calls left
+300000 friends. Next cursor: 1510225686126833463
+8 API calls left
+305000 friends. Next cursor: 1510142307255124405
+7 API calls left
+310000 friends. Next cursor: 1510017554698070354
+6 API calls left
+315000 friends. Next cursor: 1509837077087881403
+5 API calls left
+320000 friends. Next cursor: 1509579545790631489
+4 API calls left
+325000 friends. Next cursor: 1509455879443451079
+3 API calls left
+330000 friends. Next cursor: 1509326166185928805
+2 API calls left
+335000 friends. Next cursor: 1509241980631801765
+1 API calls left
+340000 friends. Next cursor: 1509141590753122683
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+345000 friends. Next cursor: 1509047237800140122
+11 API calls left
+350000 friends. Next cursor: 1508782008071578623
+10 API calls left
+355000 friends. Next cursor: 1508579645111709839
+9 API calls left
+360000 friends. Next cursor: 1508433650310975694
+8 API calls left
+365000 friends. Next cursor: 1508335965675010346
+7 API calls left
+370000 friends. Next cursor: 1508238142874880891
+6 API calls left
+375000 friends. Next cursor: 1508112664542517774
+5 API calls left
+380000 friends. Next cursor: 1508044980271994517
+4 API calls left
+385000 friends. Next cursor: 1507589596765057171
+3 API calls left
+390000 friends. Next cursor: 1507444308250689965
+2 API calls left
+395000 friends. Next cursor: 1507329100267758371
+1 API calls left
+400000 friends. Next cursor: 1507233966869366414
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+405000 friends. Next cursor: 1507173794542223812
+11 API calls left
+410000 friends. Next cursor: 1506785914729143058
+10 API calls left
+415000 friends. Next cursor: 1506591280386581163
+9 API calls left
+420000 friends. Next cursor: 1506511525888538808
+8 API calls left
+425000 friends. Next cursor: 1506431572714111186
+7 API calls left
+430000 friends. Next cursor: 1506332626983249582
+6 API calls left
+435000 friends. Next cursor: 1506098494877556533
+5 API calls left
+440000 friends. Next cursor: 1505997697502685395
+4 API calls left
+445000 friends. Next cursor: 1505934766156524141
+3 API calls left
+450000 friends. Next cursor: 1505839879097351919
+2 API calls left
+455000 friends. Next cursor: 1505734095062910055
+1 API calls left
+460000 friends. Next cursor: 1505493647260965716
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+465000 friends. Next cursor: 1505371719562875535
+11 API calls left
+470000 friends. Next cursor: 1505280850771421977
+10 API calls left
+475000 friends. Next cursor: 1505211232667847156
+9 API calls left
+480000 friends. Next cursor: 1505023121551792236
+8 API calls left
+485000 friends. Next cursor: 1504887186793177913
+7 API calls left
+490000 friends. Next cursor: 1504802193323773042
+6 API calls left
+495000 friends. Next cursor: 1504583069509749534
+5 API calls left
+500000 friends. Next cursor: 1504463658305417641
+4 API calls left
+505000 friends. Next cursor: 1504355695021555717
+3 API calls left
+510000 friends. Next cursor: 1504263062075059097
+2 API calls left
+515000 friends. Next cursor: 1504107558943766786
+1 API calls left
+520000 friends. Next cursor: 1504027638793759894
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+525000 friends. Next cursor: 1503822913194821248
+11 API calls left
+530000 friends. Next cursor: 1503789969674901758
+10 API calls left
+535000 friends. Next cursor: 1503699169134012724
+9 API calls left
+540000 friends. Next cursor: 1503629945077516312
+8 API calls left
+545000 friends. Next cursor: 1503559543912043779
+7 API calls left
+550000 friends. Next cursor: 1503350579381552897
+6 API calls left
+555000 friends. Next cursor: 1503223650407899987
+5 API calls left
+560000 friends. Next cursor: 1503159617097388561
+4 API calls left
+565000 friends. Next cursor: 1503049385926912529
+3 API calls left
+570000 friends. Next cursor: 1502960086465307843
+2 API calls left
+575000 friends. Next cursor: 1502903059485781572
+1 API calls left
+580000 friends. Next cursor: 1502725041222512552
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+585000 friends. Next cursor: 1502685043551956239
+11 API calls left
+590000 friends. Next cursor: 1502631956860479063
+10 API calls left
+593881 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+783 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+331 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+242 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+138 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+5000 friends. Next cursor: 1516952707458755831
+4 API calls left
+10000 friends. Next cursor: 1514270323976715401
+3 API calls left
+11292 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+2102 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+1806 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+7 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+180 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+7 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+135 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+4 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+22 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+169 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+179 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+4 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+75 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+137 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+723 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+66 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+434 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+0 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+221 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+873 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+346 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+39 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+447 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+261 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+25 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+62 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+275 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+0 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+309 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+85 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+35 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+13 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+111 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+5 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+91 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+5000 friends. Next cursor: 1512971376940949738
+5 API calls left
+10000 friends. Next cursor: 1511584840284055591
+4 API calls left
+15000 friends. Next cursor: 1509234134270830997
+3 API calls left
+20000 friends. Next cursor: 1508496599590755213
+2 API calls left
+25000 friends. Next cursor: 1506106854742375956
+1 API calls left
+30000 friends. Next cursor: 1503140673589203927
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+35000 friends. Next cursor: 1493414524424041957
+12 API calls left
+40000 friends. Next cursor: 1488998641854730529
+11 API calls left
+45000 friends. Next cursor: 1479730746407714257
+10 API calls left
+50000 friends. Next cursor: 1478387850744426720
+9 API calls left
+55000 friends. Next cursor: 1476779926377792539
+8 API calls left
+60000 friends. Next cursor: 1475793001929182095
+7 API calls left
+65000 friends. Next cursor: 1474467138853745221
+6 API calls left
+70000 friends. Next cursor: 1473667623004427588
+5 API calls left
+75000 friends. Next cursor: 1471289734404095236
+4 API calls left
+80000 friends. Next cursor: 1470616068148748216
+3 API calls left
+85000 friends. Next cursor: 1470159937282362013
+2 API calls left
+90000 friends. Next cursor: 1469172241892916867
+1 API calls left
+95000 friends. Next cursor: 1468780548483919541
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+100000 friends. Next cursor: 1468348020320275062
+11 API calls left
+105000 friends. Next cursor: 1467980337428106387
+10 API calls left
+110000 friends. Next cursor: 1467113147166109377
+9 API calls left
+115000 friends. Next cursor: 1466755951591897875
+8 API calls left
+120000 friends. Next cursor: 1465892897534511286
+7 API calls left
+125000 friends. Next cursor: 1465493666573807560
+6 API calls left
+130000 friends. Next cursor: 1465156870298588972
+5 API calls left
+135000 friends. Next cursor: 1464530262298383712
+4 API calls left
+140000 friends. Next cursor: 1459903993457712412
+3 API calls left
+145000 friends. Next cursor: 1459500646807826104
+2 API calls left
+150000 friends. Next cursor: 1458967005436324694
+1 API calls left
+155000 friends. Next cursor: 1458423675520029743
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+160000 friends. Next cursor: 1457769726469970542
+11 API calls left
+165000 friends. Next cursor: 1457118280112580411
+10 API calls left
+170000 friends. Next cursor: 1456557382159782820
+9 API calls left
+175000 friends. Next cursor: 1455982617349229929
+8 API calls left
+180000 friends. Next cursor: 1455004545058314187
+7 API calls left
+185000 friends. Next cursor: 1453989656284908432
+6 API calls left
+190000 friends. Next cursor: 1453250424770479821
+5 API calls left
+195000 friends. Next cursor: 1452539866377930660
+4 API calls left
+200000 friends. Next cursor: 1452169788802986318
+3 API calls left
+205000 friends. Next cursor: 1452094648577670224
+2 API calls left
+210000 friends. Next cursor: 1451651134723837584
+1 API calls left
+215000 friends. Next cursor: 1451256720550683865
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+220000 friends. Next cursor: 1451231493864000893
+11 API calls left
+225000 friends. Next cursor: 1451160419894699602
+10 API calls left
+230000 friends. Next cursor: 1451147159948109628
+9 API calls left
+235000 friends. Next cursor: 1451136176813191840
+8 API calls left
+240000 friends. Next cursor: 1451063822838621329
+7 API calls left
+245000 friends. Next cursor: 1451041934164269799
+6 API calls left
+250000 friends. Next cursor: 1451013859243380522
+5 API calls left
+255000 friends. Next cursor: 1450955609692904361
+4 API calls left
+260000 friends. Next cursor: 1450929549228512732
+3 API calls left
+265000 friends. Next cursor: 1450821790822386455
+2 API calls left
+270000 friends. Next cursor: 1450741622594576891
+1 API calls left
+275000 friends. Next cursor: 1450649581673760322
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+280000 friends. Next cursor: 1450576831983430081
+11 API calls left
+285000 friends. Next cursor: 1450527876701125989
+10 API calls left
+290000 friends. Next cursor: 1450445127198971619
+9 API calls left
+295000 friends. Next cursor: 1450390540665942062
+8 API calls left
+300000 friends. Next cursor: 1450346374361360653
+7 API calls left
+305000 friends. Next cursor: 1450261431636052717
+6 API calls left
+310000 friends. Next cursor: 1450167922209270124
+5 API calls left
+315000 friends. Next cursor: 1450107077057647628
+4 API calls left
+320000 friends. Next cursor: 1450052882265641046
+3 API calls left
+325000 friends. Next cursor: 1449995543213642546
+2 API calls left
+330000 friends. Next cursor: 1449909519396044753
+1 API calls left
+335000 friends. Next cursor: 1449821768864575814
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+340000 friends. Next cursor: 1449788495454732532
+11 API calls left
+345000 friends. Next cursor: 1449723787958628794
+10 API calls left
+350000 friends. Next cursor: 1449680316845511781
+9 API calls left
+355000 friends. Next cursor: 1449603967405205243
+8 API calls left
+360000 friends. Next cursor: 1449469613839243019
+7 API calls left
+365000 friends. Next cursor: 1449416399803165531
+6 API calls left
+370000 friends. Next cursor: 1449342057551654013
+5 API calls left
+375000 friends. Next cursor: 1449247714876232337
+4 API calls left
+380000 friends. Next cursor: 1449171842465640726
+3 API calls left
+385000 friends. Next cursor: 1449089306186386784
+2 API calls left
+390000 friends. Next cursor: 1448993982061279954
+1 API calls left
+395000 friends. Next cursor: 1448907612689510981
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+400000 friends. Next cursor: 1448829887269559255
+11 API calls left
+405000 friends. Next cursor: 1448742818111064115
+10 API calls left
+410000 friends. Next cursor: 1448713500580516809
+9 API calls left
+415000 friends. Next cursor: 1448632580527583609
+8 API calls left
+420000 friends. Next cursor: 1448608906986843489
+7 API calls left
+425000 friends. Next cursor: 1448518462638663128
+6 API calls left
+430000 friends. Next cursor: 1448437773834979691
+5 API calls left
+435000 friends. Next cursor: 1448353488278960128
+4 API calls left
+440000 friends. Next cursor: 1448317599181695433
+3 API calls left
+445000 friends. Next cursor: 1448178339049732461
+2 API calls left
+450000 friends. Next cursor: 1448121511542785407
+1 API calls left
+455000 friends. Next cursor: 1448038300465687865
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+460000 friends. Next cursor: 1447945281300815667
+11 API calls left
+465000 friends. Next cursor: 1447855157701638967
+10 API calls left
+470000 friends. Next cursor: 1447762806882371557
+9 API calls left
+475000 friends. Next cursor: 1447651922159775661
+8 API calls left
+480000 friends. Next cursor: 1447478196934045432
+7 API calls left
+485000 friends. Next cursor: 1447395179919477745
+6 API calls left
+490000 friends. Next cursor: 1447299411372043754
+5 API calls left
+495000 friends. Next cursor: 1447266722533778331
+4 API calls left
+500000 friends. Next cursor: 1447165465223868413
+3 API calls left
+505000 friends. Next cursor: 1447091707906353403
+2 API calls left
+510000 friends. Next cursor: 1446999382336510769
+1 API calls left
+515000 friends. Next cursor: 1446903054029498292
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+520000 friends. Next cursor: 1446801932086669057
+11 API calls left
+525000 friends. Next cursor: 1446531162387282459
+10 API calls left
+530000 friends. Next cursor: 1446413397367764227
+9 API calls left
+535000 friends. Next cursor: 1446278424471777784
+8 API calls left
+540000 friends. Next cursor: 1446180596466853207
+7 API calls left
+545000 friends. Next cursor: 1446103633855066656
+6 API calls left
+550000 friends. Next cursor: 1446017668084382003
+5 API calls left
+555000 friends. Next cursor: 1445928491825748898
+4 API calls left
+560000 friends. Next cursor: 1445767748822648856
+3 API calls left
+565000 friends. Next cursor: 1445664822799578652
+2 API calls left
+568543 friends. Next cursor: 0
+1 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+682 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+413 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+168 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+8 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+1 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+527 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+788 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+178 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+1582 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+1051 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+69 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+2 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+552 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+9 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+13 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+2 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+132 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+300 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+740 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+45 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+4979 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+Error : Authorization Required
+
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+343 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+163 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+2 API calls left
+1930 friends. Next cursor: 0
+1 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+74 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+236 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+231 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+4899 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+362 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+544 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+51 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+126 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+2090 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+190 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+24 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+779 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+91 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+324 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+0 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+87 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+8 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+510 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+0 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+706 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+Error : Authorization Required
+
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+277 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+84 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+149 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+278 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+342 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+2 API calls left
+101 friends. Next cursor: 0
+1 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+761 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+1282 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+133 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+Error : Authorization Required
+
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+138 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+856 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+857 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+30 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+41 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+348 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+623 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+34 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+978 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+2 API calls left
+223 friends. Next cursor: 0
+1 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+117 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+17 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+145 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+96 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+180 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+34 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+197 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+0 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+711 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+200 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+128 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+48 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+558 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+173 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+366 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+34 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+507 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+44 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+88 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+176 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+Error : Authorization Required
+
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+73 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+45 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+871 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+101 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+36 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+2 API calls left
+742 friends. Next cursor: 0
+1 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+16 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+267 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+162 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+263 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+327 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+360 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+522 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+84 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+0 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+221 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+138 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+530 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+369 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+1006 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+348 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+917 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+6 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+2058 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+4 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+449 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+36 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+591 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+7 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+215 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+0 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+5000 friends. Next cursor: 1518067328164045154
+2 API calls left
+10000 friends. Next cursor: 1517380370154388004
+1 API calls left
+15000 friends. Next cursor: 1516761576351886711
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+20000 friends. Next cursor: 1516304114696577973
+12 API calls left
+25000 friends. Next cursor: 1515870153758437165
+11 API calls left
+30000 friends. Next cursor: 1515400948635899757
+10 API calls left
+35000 friends. Next cursor: 1514967745884652571
+9 API calls left
+40000 friends. Next cursor: 1514414620188223562
+8 API calls left
+45000 friends. Next cursor: 1513848439342297822
+7 API calls left
+50000 friends. Next cursor: 1513070817956837130
+6 API calls left
+55000 friends. Next cursor: 1512084261511898216
+5 API calls left
+60000 friends. Next cursor: 1511032397871055114
+4 API calls left
+65000 friends. Next cursor: 1510083387149883600
+3 API calls left
+70000 friends. Next cursor: 1508787523124797443
+2 API calls left
+75000 friends. Next cursor: 1507360709573331919
+1 API calls left
+80000 friends. Next cursor: 1506248764772313047
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+85000 friends. Next cursor: 1505166227541382441
+11 API calls left
+90000 friends. Next cursor: 1503870083245852241
+10 API calls left
+95000 friends. Next cursor: 1502589995848139571
+9 API calls left
+100000 friends. Next cursor: 1501151772821869105
+8 API calls left
+105000 friends. Next cursor: 1499806227399095112
+7 API calls left
+110000 friends. Next cursor: 1498438636495412139
+6 API calls left
+115000 friends. Next cursor: 1496617947051317967
+5 API calls left
+120000 friends. Next cursor: 1495276266013020851
+4 API calls left
+125000 friends. Next cursor: 1494356001647791715
+3 API calls left
+130000 friends. Next cursor: 1493556273692593343
+2 API calls left
+135000 friends. Next cursor: 1492543166947325291
+1 API calls left
+140000 friends. Next cursor: 1491244486908568418
+0 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+145000 friends. Next cursor: 1490008287488373549
+11 API calls left
+150000 friends. Next cursor: 1488739388769294002
+10 API calls left
+155000 friends. Next cursor: 1487383286146849338
+9 API calls left
+160000 friends. Next cursor: 1485596019638628800
+8 API calls left
+165000 friends. Next cursor: 1483791163208417889
+7 API calls left
+167702 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+1184 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+57 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+451 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+106 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+895 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+3302 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+2 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+180 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+17 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+926 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+376 friends. Next cursor: 0
+7 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+7 API calls left
+177 friends. Next cursor: 0
+6 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+6 API calls left
+1190 friends. Next cursor: 0
+5 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+5 API calls left
+439 friends. Next cursor: 0
+4 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+4 API calls left
+275 friends. Next cursor: 0
+3 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+3 API calls left
+241 friends. Next cursor: 0
+2 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+0 friends. Next cursor: 0
+14 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+14 API calls left
+686 friends. Next cursor: 0
+13 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+13 API calls left
+300 friends. Next cursor: 0
+12 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+12 API calls left
+533 friends. Next cursor: 0
+11 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+11 API calls left
+271 friends. Next cursor: 0
+10 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+10 API calls left
+1147 friends. Next cursor: 0
+9 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+9 API calls left
+240 friends. Next cursor: 0
+8 API calls left
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+8 API calls left
+122 friends. Next cursor: 0
+7 API calls left
+     [,1]         [,2]         [,3]                   [,4]         [,5]        
+[1,] "0"          "0"          "0.000238891543239369" "0"          "0"         
+[2,] "507101376"  "507410871"  "2452082108"           "78010944"   "423817285" 
+[3,] "3734339897" "3435019210" "3936078687"           "3321005767" "4232987367"
+     [,6]                  [,7]                  [,8]                  
+[1,] "3.7000037000037e-05" "0.00278551532033426" "0.000384763370527126"
+[2,] "1316757157"          "728704339"           "633854293"           
+[3,] "13017862"            "4221511943"          "4243002315"          
+     [,9]                   [,10]        [,11]                 
+[1,] "0.000100908512978517" "0"          "0.000175024065809049"
+[2,] "2465436362"           "636974466"  "627886667"           
+[3,] "58598973"             "3991469355" "1588739083"          
+     [,12]                 [,13]        [,14]        [,15]       
+[1,] "0.00205128205128205" "0"          "0"          "0"         
+[2,] "1323833334"          "1488812706" "2716419319" "849759493" 
+[3,] "3928706062"          "4140427955" "4176255495" "4214430826"
+     [,16]                 [,17]        [,18]        [,19]        [,20]       
+[1,] "0.00288184438040346" "0"          "0"          "0"          "0"         
+[2,] "2525405480"          "140068649"  "3617180722" "391524358"  "1100842615"
+[3,] "4140427955"          "3459191894" "4219907716" "4205482517" "3389663560"
+     [,21]                [,22]        [,23]        [,24]        [,25]       
+[1,] "0.0806737588652482" "0"          "0"          "0"          "0"         
+[2,] "540364355"          "2828131577" "3530168112" "450637506"  "1577256217"
+[3,] "4102343414"         "4235539156" "3185845268" "4246785313" "4135311023"
+     [,26]                 [,27]        [,28]        [,29]                 
+[1,] "0.00840336134453781" "0"          "0"          "5.09493265026098e-05"
+[2,] "2558689794"          "3021525008" "1412324610" "49063628"            
+[3,] "778940004"           "2530470342" "4004379976" "4051735653"          
+     [,30]                [,31]        [,32]                 [,33]       
+[1,] "0.0104347826086957" "0"          "0.00689127105666156" "0"         
+[2,] "2714807887"         "2606584256" "2528574236"          "451958103" 
+[3,] "4157547628"         "4173016875" "3368012713"          "4191444509"
+     [,34]                 [,35]                 [,36]        [,37]       
+[1,] "0.00178890876565295" "0.00180831826401447" "0"          "0"         
+[2,] "239099896"           "2453257273"          "1245577638" "244624878" 
+[3,] "3893454503"          "539918492"           "4005584896" "4235479588"
+     [,38]                 [,39]                 [,40]       
+[1,] "0.00289296046287367" "0.00119569549621363" "0"         
+[2,] "202566660"           "3138130522"          "371362532" 
+[3,] "4191312957"          "3261074924"          "3194630304"
+     [,41]                 [,42]                [,43]                
+[1,] "0.00383693045563549" "0.0130718954248366" "0.00175746924428822"
+[2,] "504259450"           "346397215"          "442209176"          
+[3,] "3668570843"          "4014683414"         "3435303599"         
+     [,44]        [,45]               [,46]                 
+[1,] "0"          "0.023121387283237" "0.000877963125548727"
+[2,] "138706071"  "251041708"         "927065832"           
+[3,] "3744303012" "3224139283"        "4147760914"          
+     [,47]                 [,48]        [,49]        [,50]        [,51]       
+[1,] "0.00124688279301746" "0"          "0"          "0"          "0"         
+[2,] "615384527"           "2206582425" "262327761"  "116677505"  "1947931831"
+[3,] "58598973"            "4243568299" "3958311083" "4261003633" "4174217301"
+     [,52]        [,53]                 [,54]        [,55]               
+[1,] "0"          "0.00431034482758621" "0"          "0.0058343057176196"
+[2,] "2398342694" "593000284"           "355932117"  "493153874"         
+[3,] "242864539"  "3295675277"          "3551230463" "3286372490"        
+     [,56]                 [,57]        [,58]        [,59]       
+[1,] "0.00283486888731396" "0"          "0"          "0"         
+[2,] "72012179"            "1391211613" "2828542915" "987070657" 
+[3,] "4229582241"          "172664876"  "4234354888" "3715111814"
+     [,60]                 [,61]                  [,62]                
+[1,] "0.00935550935550936" "0.000989119683481701" "0.00890207715133531"
+[2,] "3055167587"          "317750603"            "2406965797"         
+[3,] "3891873568"          "4178911642"           "957398418"          
+     [,63]        [,64]        [,65]        [,66]        [,67]       
+[1,] "0"          "0"          "0"          "0"          "0"         
+[2,] "486812968"  "721274886"  "3109931547" "2151349802" "702174380" 
+[3,] "3433458208" "3975698057" "4271013192" "3937950792" "4212417094"
+     [,68]        [,69]               [,70]                 [,71]       
+[1,] "0"          "0.327586206896552" "0.00185185185185185" "0"         
+[2,] "3036492034" "4252627333"        "317750603"           "2189871188"
+[3,] "4195026803" "4163764763"        "3836691107"          "3418521567"
+     [,72]        [,73]        [,74]                 [,75]        [,76]       
+[1,] "0"          "0"          "0.00517063081695967" "0"          "0"         
+[2,] "301681004"  "511422643"  "540364355"           "23573083"   "929873197" 
+[3,] "4239197415" "3221117295" "3749349077"          "3194988764" "4215815813"
+     [,77]                 [,78]                 [,79]                
+[1,] "0.00235849056603774" "0.00145772594752187" "0.00165289256198347"
+[2,] "1178725555"          "78010944"            "2583740348"         
+[3,] "3865341559"          "4254910578"          "3002950337"         
+     [,80]        [,81]                [,82]                 
+[1,] "0"          "0.0121212121212121" "0.000727802037845706"
+[2,] "3185515261" "627886667"          "176097702"           
+[3,] "4222651527" "1890830545"         "4212814881"          
+     [,83]                 [,84]        [,85]        [,86]                
+[1,] "0.00237717908082409" "0"          "0"          "0.00480769230769231"
+[2,] "464810879"           "257502383"  "2282479322" "2182678122"         
+[3,] "4245021792"          "3290458596" "4218030143" "4244922435"         
+     [,87]        [,88]        [,89]        [,90]                
+[1,] "0"          "0"          "0"          "0.00541516245487365"
+[2,] "596511335"  "3298469303" "823147302"  "775250617"          
+[3,] "4234665645" "2858224494" "3214020128" "4069750463"         
+     [,91]                 [,92]        [,93]        [,94]                
+[1,] "0.00430725053840632" "0"          "0"          "0.00545454545454545"
+[2,] "1264564356"          "2459415057" "1422395257" "632999172"          
+[3,] "2220273378"          "4183991693" "3221203134" "4033903529"         
+     [,95]                 [,96]                 [,97]        [,98]       
+[1,] "0.00307881773399015" "0.00584795321637427" "0"          "0"         
+[2,] "3048792813"          "315390105"           "482477719"  "202566660" 
+[3,] "4235539156"          "2394450728"          "2379516758" "4275879798"
+     [,99]                [,100]      
+[1,] "0.0157593123209169" "0"         
+[2,] "1681685264"         "248596808" 
+[3,] "3364983328"         "2790590437"
+> 
+> save.image("tmp_RData/out-22-nov.RData")
+> 
+> 
+> ## ------------------------------------------------------------------------
+> devtools::session_info()
+Session info -------------------------------------------------------------------
+ setting  value                       
+ version  R version 3.2.2 (2015-08-14)
+ system   x86_64, linux-gnu           
+ ui       X11                         
+ language (EN)                        
+ collate  en_US.UTF-8                 
+ tz       <NA>                        
+ date     2015-11-22                  
+
+Packages -----------------------------------------------------------------------
+ package   * version  date       source                               
+ bitops    * 1.0-6    2013-08-17 CRAN (R 3.2.2)                       
+ boot      * 1.3-17   2015-06-29 CRAN (R 3.2.2)                       
+ coda      * 0.18-1   2015-10-16 CRAN (R 3.2.2)                       
+ devtools    1.9.1    2015-09-11 CRAN (R 3.2.2)                       
+ digest      0.6.8    2014-12-31 CRAN (R 3.2.2)                       
+ jsonlite    0.9.17   2015-09-06 CRAN (R 3.2.2)                       
+ knitr     * 1.11     2015-08-14 CRAN (R 3.2.2)                       
+ lattice     0.20-33  2015-07-14 CRAN (R 3.2.2)                       
+ memoise     0.2.1    2014-04-22 CRAN (R 3.2.2)                       
+ NLP       * 0.1-8    2015-07-03 CRAN (R 3.2.2)                       
+ plyr        1.8.3    2015-06-12 CRAN (R 3.2.2)                       
+ R2WinBUGS * 2.1-21   2015-07-30 CRAN (R 3.2.2)                       
+ Rcpp        0.12.2   2015-11-15 CRAN (R 3.2.2)                       
+ RCurl     * 1.95-4.7 2015-06-30 CRAN (R 3.2.2)                       
+ rjson     * 0.2.15   2014-11-03 CRAN (R 3.2.2)                       
+ RJSONIO   * 1.3-0    2014-07-28 CRAN (R 3.2.2)                       
+ rmongodb  * 1.8.0    2014-11-12 CRAN (R 3.2.2)                       
+ ROAuth    * 0.9.6    2015-02-13 CRAN (R 3.2.2)                       
+ slam        0.1-32   2014-04-02 CRAN (R 3.2.2)                       
+ smappR    * 0.4      2015-11-22 Github (SMAPPNYU/smappR@388910b)     
+ streamR   * 0.3.2    2015-11-22 Github (pablobarbera/streamR@47eb8ee)
+ tm        * 0.6-2    2015-07-03 CRAN (R 3.2.2)                       
+> 
+> 
+> proc.time()
+     user    system   elapsed 
+   30.956     1.323 34642.947 
