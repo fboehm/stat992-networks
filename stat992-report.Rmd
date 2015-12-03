@@ -1,0 +1,33 @@
+---
+title: "Characterizing social networks of terrorist sympathizers on Twitter"
+author: "Micah Dillard and Fred Boehm"
+date: "December 3, 2015"
+output: html_document
+---
+
+## Abstract
+
+
+
+## Introduction
+
+
+
+## Data
+
+
+
+
+## Methods
+
+
+
+## Results
+
+
+## Discussion
+
+## Future directions
+
+
+## References
