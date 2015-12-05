@@ -15,6 +15,10 @@ output: html_document
 
 ## Data
 
+We used the R package `smappR` and the REST API to access twitter data. Available data for a given user includes information such as the number of followers, number of friends, number of tweets, and account creation time. A list of available information is given in Table A1 of the appendix. 
+
+
+
 
 
 
@@ -27,7 +31,10 @@ output: html_document
 
 ## Discussion
 
-## Future directions
+
+
+
+
 
 
 ## References
