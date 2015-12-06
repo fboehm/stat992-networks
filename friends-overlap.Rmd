@@ -40,62 +40,22 @@ Recall that Jaccard index for nodes i and j is $$J(i,j) = \frac{|A \cap B|}{|A \
 
 
 
-```{r}
-
-calc_jaccard_followers <- function(id1, id2, sleep = 10){
-    fol1 <- NA
-    fol2 <- NA
-    try(fol1 <- getFollowers(user_id=id1, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
-    try(fol2 <- getFollowers(user_id=id2, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
-    denom <- length(union(fol1, fol2))
-    num <- length(intersect(fol1, fol2))
-    ratio <- num/denom
-    return(list(ratio=ratio, num=num, denom=denom, n1 = length(fol1), n2=length(fol2)))
-}
-
-
-samp_jaccard_followers <- function(followers=fols){
-    samp <- sample(followers, size = 2, replace=FALSE)
-    ji<- calc_jaccard_followers(id1=samp[1], id2 = samp[2], sleep=100)
-    return(c(unlist(ji), samp[1], samp[2]))
-}
-calc_jaccard_friends <- function(id1, id2, sleep = 10){
-    fol1 <- NA
-    fol2 <- NA
-    try(fol1 <- getFriends(user_id=id1, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
-    try(fol2 <- getFriends(user_id=id2, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
-    denom <- length(union(fol1, fol2))
-    num <- length(intersect(fol1, fol2))
-    ratio <- num/denom
-    return(list(ratio=ratio, num=num, denom=denom, n1 = length(fol1), n2=length(fol2)))
-}
-
-
-samp_jaccard_friends <- function(friends=frs){
-    samp <- sample(friends, size = 2, replace=FALSE)
-    ji<- calc_jaccard_friends(id1=samp[1], id2 = samp[2], sleep=70)
-    return(c(unlist(ji), samp[1], samp[2]))
-}
-
-```
-
 ```{r, cache=TRUE}
 calc_jaccard<- function(a,b){
     denom <- length(union(a, b))
     num <- length(intersect(a, b))
     ratio <- num/denom
-    out<- c(ratio, num, denom)
-    names(out)<- c("jaccard_index", "intersect_length", "union_length")
+    out<- list(jaccard=ratio, numerator=num, denominator=denom)
     return(out)
 }
 
-wrap <- function(id1, id2, sleep = 30){
+jac_wrap <- function(id1, id2, sleep = 60, fn1 = getFriends, fn2=getFriends){
     f1 <- NA
     f2 <- NA
-    try(f1 <- getFriends(user_id=id1, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
-    try(f2 <- getFriends(user_id=id2, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
+    try(f1 <- fn1(user_id=id1, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
+    try(f2 <- fn2(user_id=id2, sleep=sleep, oauth_folder = "~/Dropbox/credentials"))
     ji <- calc_jaccard(f1, f2)
-    return(ji)
+    return(list(ji, f1=f1, f2=f2))
 }
 
 
@@ -133,6 +93,24 @@ Let's get the user information for the two seeds.
 seed_info<- getUsers(oauth_folder = "~/Dropbox/credentials/", screen_names = c("WaleedGaj2002", "saeed_950"))
 seed_info
 ```
+
+## Who are the eight users that both \@WaleedGaj2002 and \@saeed_950 follow?
+
+```{r overlap-fr1-fr2}
+foo <- getUsers(id = intersect(fr1, fr2), include_entities = TRUE, verbose = TRUE, oauth_folder = "~/Dropbox/credentials/")
+
+extract_user_info <- function(user_list){
+    out <- list(id=user_list$id, name=user_list$name, screen_name=user_list$screen_name, location=user_list$location, description=user_list$description, followers_count=user_list$followers_count, friends_count=user_list$friends_count, created_at = user_list$created_at)
+    return(out)
+}
+
+```
+
+```{r}
+sapply(FUN=extract_user_info, X=foo)
+```
+
+
 
 ### Session info
 
