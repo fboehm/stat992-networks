@@ -106,8 +106,14 @@ extract_user_info <- function(user_list){
 
 ```
 
+
+
+
+
+
 ```{r}
-sapply(FUN=extract_user_info, X=foo)
+bar <- sapply(FUN=extract_user_info, X=foo)
+kable(data.frame(t(bar)))
 ```
 
 
