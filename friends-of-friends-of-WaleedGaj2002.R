@@ -14,7 +14,7 @@ fr1 <- getFriends(screen_name = "WaleedGaj2002", oauth_folder = "~/Dropbox/crede
 
 ## ------------------------------------------------------------------------
 out <- list()
-for (i in length(fr1)){
+for (i in 1:length(fr1)){
     out[[i]]<- getFriends(user_id = fr1[i], oauth_folder = "~/Dropbox/credentials/", sleep = 60, verbose=TRUE)
 }
 save.image("tmp_RData/fr-of-fr-of-wg2002.RData")
