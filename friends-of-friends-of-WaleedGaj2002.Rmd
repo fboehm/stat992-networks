@@ -1,0 +1,41 @@
+---
+title: "Collect friends of friends of WaleedGaj2002"
+author: "Fred Boehm"
+date: "December 11, 2015"
+output: html_document
+---
+
+We first install the latest versions of the needed R packages.
+
+```{r, eval=FALSE}
+devtools::install_github("rstudio/leaflet")
+devtools::install_github("SMAPPNYU/smappR")
+devtools::install_github("pablobarbera/streamR/streamR")
+```
+
+
+
+```{r}
+library(smappR)
+library(streamR)
+library(knitr)
+opts_chunk$set(cache=TRUE, cache.extra = list(R.version, sessionInfo(), format(Sys.Date(), '%Y-%m')))
+```
+
+Get the friends of \@WaleedGaj2002:
+
+```{r seed-fol-fr, cache=TRUE}
+fr1 <- getFriends(screen_name = "WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=60)
+```
+
+Now, get the friends of friends of @WaleedGaj2002:
+
+```{r}
+out <- list()
+for (i in length(fr1)){
+    out[[i]]<- getFriends(user_id = fr1[i], oauth_folder = "~/Dropbox/credentials/", sleep = 60, verbose=TRUE)
+}
+save.image("tmp_RData/fr-of-fr-of-wg2002.RData")
+```
+
+
