@@ -1,0 +1,80 @@
+
+R version 3.2.2 (2015-08-14) -- "Fire Safety"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-redhat-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+[Previously saved workspace restored]
+
+> ## ---- eval=FALSE---------------------------------------------------------
+> ## devtools::install_github("rstudio/leaflet")
+> ## devtools::install_github("SMAPPNYU/smappR")
+> ## devtools::install_github("pablobarbera/streamR/streamR")
+> 
+> ## ------------------------------------------------------------------------
+> library(smappR)
+Loading required package: rmongodb
+Loading required package: R2WinBUGS
+Loading required package: coda
+Loading required package: boot
+Loading required package: tm
+Loading required package: NLP
+Loading required package: ROAuth
+Loading required package: rjson
+Loading required package: RJSONIO
+
+Attaching package: ‘RJSONIO’
+
+The following objects are masked from ‘package:rjson’:
+
+    fromJSON, toJSON
+
+##
+## smappR: tools for analysis of Twitter data
+## Social Media and Political Participation Lab at NYU
+## smapp.nyu.edu @SMAPP_NYU
+##
+## Support provided by the U.S. National Science Foundation
+## (INSPIRE program award #1248077)
+##
+> library(streamR)
+Loading required package: RCurl
+Loading required package: bitops
+> library(knitr)
+> opts_chunk$set(cache=TRUE, cache.extra = list(R.version, sessionInfo(), format(Sys.Date(), '%Y-%m')))
+> 
+> ## ----seed-fol-fr, cache=TRUE---------------------------------------------
+> fr1 <- getFriends(screen_name = "WaleedGaj2002", oauth_folder = "~/Dropbox/credentials", sleep=60)
+/u/b/o/boehm/Dropbox/credentials/my_oauth
+15 API calls left
+687 friends. Next cursor: 0
+14 API calls left
+> 
+> ## ------------------------------------------------------------------------
+> out <- list()
+> for (i in length(fr1)){
++     out[[i]]<- getFriends(user_id = fr1[i], oauth_folder = "~/Dropbox/credentials/", sleep = 60, verbose=TRUE)
++ }
+/u/b/o/boehm/Dropbox/credentials//my_oauth
+14 API calls left
+163 friends. Next cursor: 0
+13 API calls left
+> save.image("tmp_RData/fr-of-fr-of-wg2002.RData")
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  2.626   0.399 132.774 
